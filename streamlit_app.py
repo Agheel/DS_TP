@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import folium
 from streamlit_folium import st_folium
+from PIL import Image
 
 st.set_page_config(layout="wide")
 
@@ -17,12 +18,14 @@ st.markdown("""
 -아래의 그래프는 **경상남도 내에서 지역별 범죄 지수를 나타냅니다.
 """)
 
-st.image("/workspaces/DS_TP/data/crime_region.png", caption="경상남도의 지역별 범죄지수", use_column_width=True)
+st.image("/workspaces/DS_TP/data/crime_region.png", caption="경상남도의 지역별 범죄지수", width =400, height = 350)
 
 st.markdown("""
 - 또 다른 자료는 **진주시의 범죄가 연도별로 증가하고 있는 추세**를 나타냅니다.
 """)
+
 st.image("/workspaces/DS_TP/data/crime_year.png", caption="연도별 진주시 범죄 지수", use_column_width=True) 
+
 st.markdown("""
 👉 이러한 배경 속에서, 우리는 진주시의 범죄의 특성을 파악하고 시간적, 환경적 요인을 분석하여 대책을 제안하고 싶습니다.
 """)
