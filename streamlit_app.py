@@ -5,7 +5,7 @@ import folium
 from streamlit_folium import st_folium
 from PIL import Image
 
-st.set_page_config(layout="wide")
+#st.set_page_config(layout="wide")
 
 st.title("📍 진주시 범죄")
 
@@ -26,7 +26,7 @@ st.markdown("""
 """)
 img2 = Image.open("/workspaces/DS_TP/data/crime_year.png")
 img2_1 = img2.resize((500,240))
-st.image(img2_1, caption="연도별 진주시 범죄 지수", use_column_width=True) 
+st.image(img2_1, caption="연도별 진주시 범죄 지수") 
 
 st.markdown("""
 👉 이러한 배경 속에서, 우리는 진주시의 범죄의 특성을 파악하고 시간적, 환경적 요인을 분석하여 대책을 제안하고 싶습니다.
