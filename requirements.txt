@@ -3,3 +3,4 @@ pandas
 streamlit_folium
 folium
 matplotlib
+openxyl
