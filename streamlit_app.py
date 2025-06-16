@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import folium
 from streamlit_folium import st_folium
 from PIL import Image
+import numpy as np
 
 #st.set_page_config(layout="wide")
 
@@ -56,7 +57,7 @@ st.markdown("""
 # ─────────────────────────────
 # 3. 위험도 및 시설물 통계 비교
 # ─────────────────────────────
-st.subheader("3️⃣ 진주시 행정동별 위험도 및 방범 시설 비교")
+st.markdown("진주시 행정동별 위험도 및 방범 시설 비교")
 
 # 데이터 로딩
 grade_df = pd.read_excel("/workspaces/DS_TP/data/jinju_crime_grade.xlsx")
@@ -69,37 +70,55 @@ merged_df = pd.merge(grade_df, lamp_cctv_df, on="행정동", how="inner")
 # 그래프
 st.markdown("#### 🔢 위험등급 AND CCTV & 가로등 수")
 
-fig, ax1 = plt.subplots(figsize=(12, 6))
+# 값 준비
+labels = merged_df["행정동"]
+x = np.arange(len(labels))  # X축 위치
+width = 0.25  # 막대 너비
 
-ax1.set_xlabel("행정동")
+# 데이터 추출 및 변환
+risk = merged_df["위험등급"]
+cctv = merged_df["CCTV_개수"] / 100
+lamp = merged_df["가로등_개수"] / 100
+
+# 그래프 생성
+fig, ax1 = plt.subplots(figsize=(14, 6))
+
+# 📉 왼쪽 Y축: 위험등급
 ax1.set_ylabel("위험등급 (1~10)", color='red')
-ax1.plot(merged_df["행정동"], merged_df["위험등급"], color='red', marker='o', label="위험등급")
+ax1.plot(x, risk, color='red', marker='o', label='위험등급')
 ax1.tick_params(axis='y', labelcolor='red')
+ax1.set_ylim(0, 10)                             # 🔴 범위 고정
+ax1.set_yticks(np.arange(0, 11, 2))             # 🔴 0, 2, 4, ..., 10
 
+# 📊 오른쪽 Y축: CCTV, 가로등
 ax2 = ax1.twinx()
-ax2.set_ylabel("시설물 개수 (x100)", color='blue')
-ax2.bar(merged_df["행정동"], merged_df["CCTV_개수"] / 100, color='blue', alpha=0.5, label="CCTV (x100)")
-ax2.bar(merged_df["행정동"], merged_df["가로등_개수"] / 100, color='orange', alpha=0.5,
-        bottom=merged_df["CCTV_개수"] / 100, label="가로등 (x100)")
+ax2.set_ylabel("시설물 수 (x100)", color='blue')
+bars_cctv = ax2.bar(x - width/2, cctv, width, label='CCTV (x100)', color='blue')
+bars_lamp = ax2.bar(x + width/2, lamp, width, label='가로등 (x100)', color='orange')
 ax2.tick_params(axis='y', labelcolor='blue')
+ax2.set_ylim(0, max(max(cctv), max(lamp)) * 1.2)
 
+# X축 라벨
+ax1.set_xticks(x)
+ax1.set_xticklabels(labels, rotation=45)
+
+# 제목 및 범례
+plt.title("행정동별 위험등급 (선) vs CCTV 및 가로등 설치 수 (막대, x100)")
 fig.legend(loc="upper right", bbox_to_anchor=(1, 1), bbox_transform=ax1.transAxes)
-plt.xticks(rotation=45)
-plt.title("행정동별 위험등급 및 시설물 설치 수 비교")
-plt.tight_layout()
 
+plt.tight_layout()
 st.pyplot(fig)
 
-st.markdown("시간대별 범죄 발생 건수")
+st.markdown("**시간대별 범죄 발생 건수**")
 
 #여기에는 시간대별 범죄 발생 건수를 나타내는 그래프
 
-st.markdown("위의 그래프로 알 수 있는 사실을 적는다.")
+st.markdown("진주시는 범죄율이 높은데 비해 가로등과 CCTV가 적은 곳이 존재함")
 
 # ─────────────────────────────
 # 4. 행정구역 + 시설 위치 지도
 # ─────────────────────────────
-st.subheader("4️⃣ 지도 기반 시각화")
+st.subheader("4️⃣ 진주시 시설물 지도")
 
 st.markdown("""
 - 아래 지도는 **행정동 경계와 함께 CCTV 및 가로등 위치**를 표시합니다.
@@ -111,8 +130,8 @@ show_cctv = st.checkbox("CCTV 위치 보기", value=False)
 show_lamp = st.checkbox("가로등 위치 보기", value=False)
 
 # 지도 데이터 예시 로딩 (위도/경도 포함된 CSV 필요)
-cctv_data = pd.read_csv("/workspaces/DS_TP/data/jinju_cctv.xlsx", encoding="cp949")
-lamp_data = pd.read_csv("/workspaces/DS_TP/data/jinju_lamp.xlsx", encoding="cp949")
+cctv_data = pd.read_excel("/workspaces/DS_TP/data/jinju_cctv.xlsx", engine='openpyxl')
+lamp_data = pd.read_excel("/workspaces/DS_TP/data/jinju_lamp.xlsx", engine='openpyxl')
 
 map_center = [35.1802, 128.1076]  # 진주시 중심 좌표
 m = folium.Map(location=map_center, zoom_start=13)

@@ -2,6 +2,7 @@ streamlit
 pandas
 streamlit_folium
 folium
-matplotlib
+plotly
 openpyxl
 Image
+numpy
