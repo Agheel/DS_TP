@@ -15,18 +15,23 @@ st.title("📍 진주시 범죄")
 st.subheader("1️⃣ 주제 선정 배경")
 
 st.markdown("""
--아래의 그래프는 **경상남도 내에서 지역별 범죄 지수를 나타냅니다.
+- **경상남도 내에서 지역별 범죄 지수** & **진주의 연도별 범죄 지수**
 """)
-img1 = Image.open("/workspaces/DS_TP/data/crime_region.png")
-img1_1 = img1.resize((400, 350))  # (width, height)
-st.image(img1_1, caption="경상남도의 지역별 범죄지수")
 
-st.markdown("""
-- 또 다른 자료는 **진주시의 범죄가 연도별로 증가하고 있는 추세**를 나타냅니다.
-""")
-img2 = Image.open("/workspaces/DS_TP/data/crime_year.png")
-img2_1 = img2.resize((500,240))
-st.image(img2_1, caption="연도별 진주시 범죄 지수") 
+# 이미지 불러오기 및 리사이즈
+img1 = Image.open("/workspaces/DS_TP/data/crime_region.png").resize((400, 350))
+img2 = Image.open("/workspaces/DS_TP/data/crime_year.png").resize((500, 430))
+
+# 열 2개 생성
+col1, col2 = st.columns(2)
+
+with col1:
+    st.image(img1, caption="경상남도의 지역별 범죄지수")
+
+with col2:
+    st.image(img2, caption="연도별 진주시 범죄 지수")
+
+# 추가 설명
 
 st.markdown("""
 👉 이러한 배경 속에서, 우리는 진주시의 범죄의 특성을 파악하고 시간적, 환경적 요인을 분석하여 대책을 제안하고 싶습니다.
@@ -43,9 +48,9 @@ st.markdown("""
 - CPTED이론(범죄예방이론)은 사람과 시간, 환경적 요인이 범죄 발생에 큰 영향을 끼친다는 이론입니다.
 - 저희는 그 중에서 시간적 요인과 환경적 요인에 중점을 두고 프로젝트를 진행하겠습니다. 
             
-[👉 생활안전지도 바로가기](https://www.safemap.go.kr/)<br>
-[👉 CPTED 개념 보러가기](http://www.cpted.kr/?r=home&c=02/0205/020501)<br>
-[👉 가로등과 범죄율의 관계 기](https://www.yna.co.kr/view/AKR20200108078300004)
+[👉 생활안전지도 바로가기](https://www.safemap.go.kr/)  
+[👉 CPTED 개념 보러가기](http://www.cpted.kr/?r=home&c=02/0205/020501)  
+[👉 가로등과 범죄율의 관계 기사](https://www.yna.co.kr/view/AKR20200108078300004)
 """)
 
 # ─────────────────────────────
