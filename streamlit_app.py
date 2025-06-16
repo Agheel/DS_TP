@@ -47,8 +47,8 @@ st.markdown("""
 - 대표적인 것이 CPTED 이론입니다.
 - CPTED이론(범죄예방이론)은 사람과 시간, 환경적 요인이 범죄 발생에 큰 영향을 끼친다는 이론입니다.
 - 저희는 그 중에서 시간적 요인과 환경적 요인에 중점을 두고 프로젝트를 진행하겠습니다. 
-            
-[👉 생활안전지도 바로가기](https://www.safemap.go.kr/)  
+       
+[👉 생활안전지도 바로가기](https://www.safemap.go.kr/)       
 [👉 CPTED 개념 보러가기](http://www.cpted.kr/?r=home&c=02/0205/020501)  
 [👉 가로등과 범죄율의 관계 기사](https://www.yna.co.kr/view/AKR20200108078300004)
 """)
@@ -58,12 +58,10 @@ st.markdown("""
 # ─────────────────────────────
 st.subheader("3️⃣ 진주시 행정동별 위험도 및 방범 시설 비교")
 
-st.markdown("위험등급과 CCTV 및 가로등 설치 현황을 행정동별로 비교한 그래프입니다.")
-
 # 데이터 로딩
 grade_df = pd.read_excel("/workspaces/DS_TP/data/jinju_crime_grade.xlsx")
 lamp_cctv_df = pd.read_excel("/workspaces/DS_TP/data/jinju_cctv_lamp.xlsx")
-time_df=pd.read.excel("/workspaces/DS_TP/data/crime_time.xlsx")
+time_df=pd.read_excel("/workspaces/DS_TP/data/crime_time.xlsx")
 
 # 병합
 merged_df = pd.merge(grade_df, lamp_cctv_df, on="행정동", how="inner")
@@ -71,7 +69,26 @@ merged_df = pd.merge(grade_df, lamp_cctv_df, on="행정동", how="inner")
 # 그래프
 st.markdown("#### 🔢 위험등급 AND CCTV & 가로등 수")
 
-#여기에는 위험등급과 CCTV & 가로등 수를 나타내는 그래프(2중 y축으로 천개 or 만개 단위로 줄여서 나타냄)
+fig, ax1 = plt.subplots(figsize=(12, 6))
+
+ax1.set_xlabel("행정동")
+ax1.set_ylabel("위험등급 (1~10)", color='red')
+ax1.plot(merged_df["행정동"], merged_df["위험등급"], color='red', marker='o', label="위험등급")
+ax1.tick_params(axis='y', labelcolor='red')
+
+ax2 = ax1.twinx()
+ax2.set_ylabel("시설물 개수 (x100)", color='blue')
+ax2.bar(merged_df["행정동"], merged_df["CCTV_개수"] / 100, color='blue', alpha=0.5, label="CCTV (x100)")
+ax2.bar(merged_df["행정동"], merged_df["가로등_개수"] / 100, color='orange', alpha=0.5,
+        bottom=merged_df["CCTV_개수"] / 100, label="가로등 (x100)")
+ax2.tick_params(axis='y', labelcolor='blue')
+
+fig.legend(loc="upper right", bbox_to_anchor=(1, 1), bbox_transform=ax1.transAxes)
+plt.xticks(rotation=45)
+plt.title("행정동별 위험등급 및 시설물 설치 수 비교")
+plt.tight_layout()
+
+st.pyplot(fig)
 
 st.markdown("시간대별 범죄 발생 건수")
 
