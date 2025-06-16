@@ -1,151 +1,122 @@
 import streamlit as st
 import pandas as pd
-import math
-from pathlib import Path
+import matplotlib.pyplot as plt
+import folium
+from streamlit_folium import st_folium
 
-# Set the title and favicon that appear in the Browser's tab bar.
-st.set_page_config(
-    page_title='GDP dashboard',
-    page_icon=':earth_americas:', # This is an emoji shortcode. Could be a URL too.
-)
+st.set_page_config(layout="wide")
 
-# -----------------------------------------------------------------------------
-# Declare some useful functions.
+st.title("📍 진주시 범죄주의구간 분석 및 해결 방안")
 
-@st.cache_data
-def get_gdp_data():
-    """Grab GDP data from a CSV file.
+# ─────────────────────────────
+# 1. 주제 선정 이유
+# ─────────────────────────────
+st.subheader("1️⃣ 주제 선정 배경")
 
-    This uses caching to avoid having to read the file every time. If we were
-    reading from an HTTP endpoint instead of a file, it's a good idea to set
-    a maximum age to the cache with the TTL argument: @st.cache_data(ttl='1d')
-    """
+st.markdown("""
+- 아래 이미지는 **경상남도 내에서 진주시의 범죄지수가 상대적으로 높음**을 보여줍니다.
+""")
 
-    # Instead of a CSV on disk, you could read from an HTTP endpoint here too.
-    DATA_FILENAME = Path(__file__).parent/'data/gdp_data.csv'
-    raw_gdp_df = pd.read_csv(DATA_FILENAME)
+st.image("data/crime_region.png", caption="경상남도의 지역별 범죄지수", use_column_width=True)
 
-    MIN_YEAR = 1960
-    MAX_YEAR = 2022
+st.markdown("""
+- 또 다른 자료는 **진주시의 범죄가 연도별로 증가하고 있는 추세**를 나타냅니다.
 
-    # The data above has columns like:
-    # - Country Name
-    # - Country Code
-    # - [Stuff I don't care about]
-    # - GDP for 1960
-    # - GDP for 1961
-    # - GDP for 1962
-    # - ...
-    # - GDP for 2022
-    #
-    # ...but I want this instead:
-    # - Country Name
-    # - Country Code
-    # - Year
-    # - GDP
-    #
-    # So let's pivot all those year-columns into two: Year and GDP
-    gdp_df = raw_gdp_df.melt(
-        ['Country Code'],
-        [str(x) for x in range(MIN_YEAR, MAX_YEAR + 1)],
-        'Year',
-        'GDP',
-    )
+st.image("data/crime_year.png", caption="연도별 진주시 범죄 지수", use_column_width=True) 
 
-    # Convert years from string to integers
-    gdp_df['Year'] = pd.to_numeric(gdp_df['Year'])
+👉 이러한 배경 속에서, 우리는 진주시의 범죄의 특성을 파악하고 시간적, 환경적 요인을 분석하여 대책을 제안하고 싶습니다.
+""")
 
-    return gdp_df
+# ─────────────────────────────
+# 2. 환경적 요인과 이론적 배경
+# ─────────────────────────────
+st.subheader("2️⃣ 환경적 요인과 이론적 배경")
 
-gdp_df = get_gdp_data()
+st.markdown("""
+- 국내 연구에 따르면, **범죄 발생에는 환경적 요인이 큰 영향을 미친다**는 논문 다수가 존재합니다.
+- 특히 CPTED 이론 (환경설계를 통한 범죄예방)은 매우 효과적인 전략으로 간주됩니다.
+- 아래는 [범죄예방디자인연구정보센터]의 관련 개념 정리입니다:
 
-# -----------------------------------------------------------------------------
-# Draw the actual page
+📝 _[여기에 논문 요약 또는 이론 설명 이미지 혹은 인용 내용 삽입]_ 
 
-# Set the title that appears at the top of the page.
-'''
-# :earth_americas: GDP dashboard
+""")
 
-Browse GDP data from the [World Bank Open Data](https://data.worldbank.org/) website. As you'll
-notice, the data only goes to 2022 right now, and datapoints for certain years are often missing.
-But it's otherwise a great (and did I mention _free_?) source of data.
-'''
+# ─────────────────────────────
+# 3. 위험도 및 시설물 통계 비교
+# ─────────────────────────────
+st.subheader("3️⃣ 진주시 행정동별 위험도 및 방범 시설 비교")
 
-# Add some spacing
-''
-''
+st.markdown("위험등급과 CCTV 및 가로등 설치 현황을 행정동별로 비교한 그래프입니다.")
 
-min_value = gdp_df['Year'].min()
-max_value = gdp_df['Year'].max()
+# 데이터 로딩
+grade_df = pd.read_excel("jinju_14dong_crime_grade.xlsx")
+facility_df = pd.read_csv("lamp_cctv_by_14dong.csv")
 
-from_year, to_year = st.slider(
-    'Which years are you interested in?',
-    min_value=min_value,
-    max_value=max_value,
-    value=[min_value, max_value])
+# 병합
+merged_df = pd.merge(grade_df, facility_df, on="행정동", how="inner")
 
-countries = gdp_df['Country Code'].unique()
+# 그래프
+st.markdown("#### 🔢 위험등급 vs CCTV & 가로등 수")
+fig, ax = plt.subplots(figsize=(12, 5))
+merged_df.plot(kind='bar', x='행정동', y=['위험등급', 'CCTV 개수', '가로등 개수'], ax=ax)
+plt.xticks(rotation=45)
+st.pyplot(fig)
 
-if not len(countries):
-    st.warning("Select at least one country")
+# ─────────────────────────────
+# 4. 행정구역 + 시설 위치 지도
+# ─────────────────────────────
+st.subheader("4️⃣ 지도 기반 시각화")
 
-selected_countries = st.multiselect(
-    'Which countries would you like to view?',
-    countries,
-    ['DEU', 'FRA', 'GBR', 'BRA', 'MEX', 'JPN'])
+st.markdown("""
+- 아래 지도는 **행정동 경계와 함께 CCTV 및 가로등 위치**를 표시합니다.
+- 사용자 인터랙션을 통해 원하는 항목만 선택해 볼 수 있도록 구현됩니다.
+""")
 
-''
-''
-''
+# 지도 필터
+show_cctv = st.checkbox("CCTV 위치 보기", value=True)
+show_lamp = st.checkbox("가로등 위치 보기", value=True)
 
-# Filter the data
-filtered_gdp_df = gdp_df[
-    (gdp_df['Country Code'].isin(selected_countries))
-    & (gdp_df['Year'] <= to_year)
-    & (from_year <= gdp_df['Year'])
-]
+# 지도 데이터 예시 로딩 (위도/경도 포함된 CSV 필요)
+cctv_data = pd.read_csv("jinju_cctv.csv", encoding="cp949")
+lamp_data = pd.read_csv("jinju_lamp.csv", encoding="cp949")
 
-st.header('GDP over time', divider='gray')
+map_center = [35.1802, 128.1076]  # 진주시 중심 좌표
+m = folium.Map(location=map_center, zoom_start=13)
 
-''
+if show_cctv:
+    for _, row in cctv_data.iterrows():
+        folium.CircleMarker(
+            location=[row['위도'], row['경도']],
+            radius=3,
+            color='blue',
+            fill=True,
+            fill_opacity=0.7,
+            tooltip="CCTV"
+        ).add_to(m)
 
-st.line_chart(
-    filtered_gdp_df,
-    x='Year',
-    y='GDP',
-    color='Country Code',
-)
+if show_lamp:
+    for _, row in lamp_data.iterrows():
+        folium.CircleMarker(
+            location=[row['위도'], row['경도']],
+            radius=2,
+            color='orange',
+            fill=True,
+            fill_opacity=0.6,
+            tooltip="가로등"
+        ).add_to(m)
 
-''
-''
+st_data = st_folium(m, width=1000, height=600)
 
+# ─────────────────────────────
+# 5. 해결방안 제시
+# ─────────────────────────────
+st.subheader("5️⃣ 해결 방안 제시")
 
-first_year = gdp_df[gdp_df['Year'] == from_year]
-last_year = gdp_df[gdp_df['Year'] == to_year]
+st.markdown("""
+- 📌 **부족한 지역에 CCTV 추가 설치**
+- 💡 **가로등 설치 및 노후화된 시설 개선**
+- ⏰ **가로등 운영시간 연장 (심야 시간 포함)**
+- ☎️ **안심귀가 콜 서비스 활성화**
 
-st.header(f'GDP in {to_year}', divider='gray')
-
-''
-
-cols = st.columns(4)
-
-for i, country in enumerate(selected_countries):
-    col = cols[i % len(cols)]
-
-    with col:
-        first_gdp = first_year[first_year['Country Code'] == country]['GDP'].iat[0] / 1000000000
-        last_gdp = last_year[last_year['Country Code'] == country]['GDP'].iat[0] / 1000000000
-
-        if math.isnan(first_gdp):
-            growth = 'n/a'
-            delta_color = 'off'
-        else:
-            growth = f'{last_gdp / first_gdp:,.2f}x'
-            delta_color = 'normal'
-
-        st.metric(
-            label=f'{country} GDP',
-            value=f'{last_gdp:,.0f}B',
-            delta=growth,
-            delta_color=delta_color
-        )
+🖼️ _[여기에 각 해결방안을 시각적으로 보여줄 수 있는 이미지들 삽입]_ 
+""")
