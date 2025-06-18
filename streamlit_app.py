@@ -63,12 +63,6 @@ st.markdown("#### 🔢 위험등급 AND CCTV & 가로등 수")
 
 # 데이터 로딩
 time_df=pd.read_excel("/workspaces/DS_TP/data/crime_time.xlsx")
-
-import streamlit as st
-import pandas as pd
-import plotly.graph_objects as go
-
-# 데이터 로딩
 grade_df = pd.read_excel("/workspaces/DS_TP/data/jinju_crime_grade.xlsx")
 lamp_cctv_df = pd.read_excel("/workspaces/DS_TP/data/jinju_cctv_lamp.xlsx")
 
@@ -78,38 +72,46 @@ merged_df = pd.merge(grade_df, lamp_cctv_df, on="행정동", how="inner")
 # 필터링
 target_dongs_graph = ["충무공동", "천전동", "평거동", "하대동", "초장동", "가호동", "상대동", "상봉동"]
 filtered = merged_df[merged_df["행정동"].isin(target_dongs_graph)].copy()
+
+# 위험등급 기준 내림차순 정렬
 filtered.sort_values(by="위험등급", ascending=False, inplace=True)
 
-# 확인용 출력
-st.write("✅ 필터링된 데이터", filtered)
-
-# 시각화용 데이터
 labels = filtered["행정동"]
+x = np.arange(len(labels))
+width = 0.25
+
 risk = filtered["위험등급"]
 cctv = filtered["CCTV_개수"] / 100
 lamp = filtered["가로등_개수"] / 100
 
-# Plotly 그래프 생성
-fig = go.Figure()
-fig.add_trace(go.Scatter(x=labels, y=risk, mode='lines+markers', name='위험등급', line=dict(color='red'), yaxis='y1'))
-fig.add_trace(go.Bar(x=labels, y=cctv, name='CCTV (x100)', marker_color='blue', yaxis='y2', offsetgroup=1))
-fig.add_trace(go.Bar(x=labels, y=lamp, name='가로등 (x100)', marker_color='orange', yaxis='y2', offsetgroup=2))
+# 그래프 그리기
+fig, ax1 = plt.subplots(figsize=(14, 6))
 
-# 레이아웃 설정
-fig.update_layout(
-    title='선정된 행정동 위험등급 (선) vs CCTV 및 가로등 수 (막대, x100)',
-    xaxis=dict(title='행정동'),
-    yaxis=dict(title='위험등급 (1~10)', range=[0, 10], tick0=0, dtick=2),
-    yaxis2=dict(title='시설물 수 (x100)', overlaying='y', side='right'),
-    legend=dict(x=1, y=1),
-    bargap=0.2,
-    width=1000,
-    height=500
-)
+# 왼쪽 Y축: 위험등급
+ax1.set_ylabel("위험등급 (1~10)", color='red')
+ax1.plot(x, risk, color='red', marker='o', label='위험등급')
+ax1.tick_params(axis='y', labelcolor='red')
+ax1.set_ylim(0, 10)
+ax1.set_yticks(np.arange(0, 11, 2))
 
-# Streamlit 출력
-st.markdown("#### 🔢 위험등급 AND CCTV & 가로등 수")
-st.plotly_chart(fig)
+# 오른쪽 Y축: CCTV, 가로등
+ax2 = ax1.twinx()
+ax2.set_ylabel("시설물 수 (x100)", color='blue')
+bars_cctv = ax2.bar(x - width/2, cctv, width, label='CCTV (x100)', color='blue')
+bars_lamp = ax2.bar(x + width/2, lamp, width, label='가로등 (x100)', color='orange')
+ax2.tick_params(axis='y', labelcolor='blue')
+ax2.set_ylim(0, max(max(cctv), max(lamp)) * 1.2)
+
+# X축 라벨 설정
+ax1.set_xticks(x)
+ax1.set_xticklabels(labels, rotation=45)
+
+# 제목 및 범례
+plt.title("선정된 행정동 위험등급 (선) vs CCTV 및 가로등 수 (막대, x100)")
+fig.legend(loc="upper right", bbox_to_anchor=(1, 1), bbox_transform=ax1.transAxes)
+
+plt.tight_layout()
+plt.show()
 
 st.markdown("**시간대별 범죄 발생 건수**")
 
