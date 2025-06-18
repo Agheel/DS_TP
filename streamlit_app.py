@@ -68,26 +68,64 @@ with tabs[0]:
     """, unsafe_allow_html=True)
 
 with tabs[1]:
-    st.markdown("<h3 class='center-content'>2️⃣ 환경적 요인과 이론적 배경</h3>", unsafe_allow_html=True)
     st.markdown("""
-    <div class='center-content'>
-    <pre>
-                
+    <style>
+    .desc-box {
+        border: 1px solid #ccc;
+        padding: 16px;
+        border-radius: 8px;
+        background-color: #f5f5f5;
+        margin-bottom: 20px;
+    }
+    .link-box {
+        border: 1px solid #ccc;
+        padding: 12px;
+        border-radius: 8px;
+        background-color: #ffffff;
+        text-align: center;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .link-box a {
+        color: #0366d6;
+        text-decoration: none;
+        font-weight: bold;
+    }
+    </style>
+    """, unsafe_allow_html=True)
 
-     국내 연구에 따르면, 범죄 발생에는 시간적, 환경적 요인이 큰 영향을 미친다는 연구 내용이 있습니다.<br><br>
-                
-     그 중 대표적인 것이 CPTED이론(범죄예방이론) 사람과 시간, 환경적 요인이 범죄 발생에 큰 영향을 끼친다는 이론입니다.<br><br>
-    
-     저희는 그 중에서 시간적 요인과 환경적 요인에 중점을 두고 프로젝트를 진행하겠습니다.<br><br>
-                
-    🔗 <a href='https://www.safemap.go.kr/' target='_blank'>-생활안전지도 바로가기</a><br><br>
-                
-    🔗 <a href='http://www.cpted.kr/?r=home&c=02/0205/020501' target='_blank'>-CPTED 개념 보러가기</a><br><br>
-                
-    🔗 <a href='https://www.yna.co.kr/view/AKR20200108078300004' target='_blank'>-가로등과 범죄율의 관계 기사</a>
-    </pre>
+    st.markdown("<h3 class='center-content'>2️⃣ 환경적 요인과 이론적 배경</h3>", unsafe_allow_html=True)
+  # ── 1) 설명박스 ──
+    st.markdown("""
+    <div class="desc-box">
+    국내 연구에 따르면, 범죄 발생에는 시간적, 환경적 요인이 큰 영향을 미친다는 연구 내용이 있습니다.<br><br>
+    그 중 대표적인 것이 <b>CPTED 이론(범죄예방이론)</b>으로, 사람과 시간, 환경적 요인이 범죄 발생에 큰 영향을 끼친다는 이론입니다.<br><br>
+    저희는 그 중에서 <b>시간적 요인</b>과 <b>환경적 요인</b>에 중점을 두고 프로젝트를 진행하겠습니다.
     </div>
     """, unsafe_allow_html=True)
+
+    # ── 2) 링크박스 3개 일렬 배치 ──
+    col1, col2, col3 = st.columns(3, gap="medium")
+    with col1:
+        st.markdown("""
+        <div class="link-box">
+          🔗 <a href="https://www.safemap.go.kr/" target="_blank">생활안전지도 바로가기</a>
+        </div>
+        """, unsafe_allow_html=True)
+    with col2:
+        st.markdown("""
+        <div class="link-box">
+          🔗 <a href="http://www.cpted.kr/?r=home&c=02/0205/020501" target="_blank">CPTED 개념 보러가기</a>
+        </div>
+        """, unsafe_allow_html=True)
+    with col3:
+        st.markdown("""
+        <div class="link-box">
+          🔗 <a href="https://www.yna.co.kr/view/AKR20200108078300004" target="_blank">가로등과 범죄율 관계 기사</a>
+        </div>
+        """, unsafe_allow_html=True)
 
 with tabs[2]:
     st.markdown("<h3 class='center-content'>3️⃣ 위험도 및 방범시설 비교</h3>", unsafe_allow_html=True)
@@ -180,13 +218,13 @@ with tabs[3]:
     # 3) 지도를 화면 중앙에 렌더링
     col_left, col_center, col_right = st.columns([1, 2, 1])
     with col_center:
-        st_folium(m, width=720, height=500)
+        st_folium(m, width=900, height=650)
 
 
 
 with tabs[4]:
     st.markdown("<h3 class='center-content'>5️⃣ 해결 방안 제시</h3>", unsafe_allow_html=True)
-    st.markdown("<div class='center-content'>문제 해결은 개인적, 사회적 측면에서의 접근이 필요합니다.</div>", unsafe_allow_html=True)
+    st.markdown("<div class='center-content'><br>문제 해결은 개인적, 사회적 측면에서의 접근이 필요합니다.<br></div>", unsafe_allow_html=True)
 
     col1, col2 = st.columns(2)
     with col1:
@@ -195,6 +233,7 @@ with tabs[4]:
         <h4>👤 개인적 측면</h4>
         <ul>
             <li>📌 <b>귀갓길 조심</b><br>밝은 길 이용, CCTV 있는 길 이용</li>
+            <li>🕐 <b>귀가 시간 조절</b><br>너무 늦게 다니지 않기</li>
         </ul>
         </div>
         """, unsafe_allow_html=True)
