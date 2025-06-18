@@ -68,7 +68,7 @@ if os.path.exists(font_path):
     plt.rcParams['axes.unicode_minus'] = False
 else:
     st.warning("❌ NanumGothic.ttf 파일이 fonts 폴더에 없습니다.")
-    
+
 # 데이터 로딩
 time_df=pd.read_excel("/workspaces/DS_TP/data/crime_time.xlsx")
 
@@ -93,31 +93,33 @@ cctv = filtered["CCTV_개수"] / 100
 lamp = filtered["가로등_개수"] / 100
 
 # 🎨 그래프 생성
+# 🎨 그래프 생성
 fig, ax1 = plt.subplots(figsize=(14, 6))
 
-# 좌측 Y축: 위험등급 (꺾은선)
-ax1.set_ylabel("위험등급 (1~10)", color='red')
+# 좌측 Y축: 위험등급
+ax1.set_ylabel("위험등급 (1~10)", color='red', fontproperties=fontprop)
 ax1.plot(x, risk, color='red', marker='o', label='위험등급')
 ax1.tick_params(axis='y', labelcolor='red')
 ax1.set_ylim(0, 10)
 ax1.set_yticks(np.arange(0, 11, 2))
+ax1.set_xticks(x)
+ax1.set_xticklabels(labels, rotation=45, fontproperties=fontprop)  # ✅ 여기도 폰트 지정
 
-# 우측 Y축: CCTV & 가로등 (막대)
+# 우측 Y축: CCTV & 가로등
 ax2 = ax1.twinx()
-ax2.set_ylabel("시설물 수 (x100)", color='blue')
+ax2.set_ylabel("시설물 수 (x100)", color='blue', fontproperties=fontprop)
 bars_cctv = ax2.bar(x - width/2, cctv, width, label='CCTV (x100)', color='blue')
 bars_lamp = ax2.bar(x + width/2, lamp, width, label='가로등 (x100)', color='orange')
 ax2.tick_params(axis='y', labelcolor='blue')
 ax2.set_ylim(0, max(max(cctv), max(lamp)) * 1.2)
 
-# X축 설정
-ax1.set_xticks(x)
-ax1.set_xticklabels(labels, rotation=45)
+# ✅ 제목도 직접 폰트 지정
+plt.title("선정된 행정동 위험등급 (선) vs CCTV 및 가로등 수 (막대, x100)", fontproperties=fontprop)
 
-# 제목 및 범례
-plt.title("선정된 행정동 위험등급 (선) vs CCTV 및 가로등 수 (막대, x100)")
+# ✅ 범례에는 한글이 없다면 fontproperties 생략 가능
 fig.legend(loc="upper right", bbox_to_anchor=(1, 1), bbox_transform=ax1.transAxes)
 
+# Streamlit 출력
 st.markdown("### 📊 위험등급 vs CCTV & 가로등")
 st.pyplot(fig)
 
