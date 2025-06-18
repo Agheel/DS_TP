@@ -61,9 +61,7 @@ st.markdown("""
 # ─────────────────────────────
 st.markdown("진주시 행정동별 위험도 및 방범 시설 비교")
 
-st.markdown("#### 🔢 위험등급 AND CCTV & 가로등 수")
-
-font_path = "./fonts/NanumGothic.ttf"  # 상대경로
+font_path = "fonts/NanumGothic.ttf"  # 상대경로
 fontprop = fm.FontProperties(fname=font_path)
 plt.rcParams['font.family'] = fontprop.get_name()
 plt.rcParams['axes.unicode_minus'] = False
