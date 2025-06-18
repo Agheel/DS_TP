@@ -59,85 +59,56 @@ st.markdown("""
 # ─────────────────────────────
 st.markdown("진주시 행정동별 위험도 및 방범 시설 비교")
 
+st.markdown("#### 🔢 위험등급 AND CCTV & 가로등 수")
+
+# 데이터 로딩
+time_df=pd.read_excel("/workspaces/DS_TP/data/crime_time.xlsx")
+
+import streamlit as st
+import pandas as pd
+import plotly.graph_objects as go
+
 # 데이터 로딩
 grade_df = pd.read_excel("/workspaces/DS_TP/data/jinju_crime_grade.xlsx")
 lamp_cctv_df = pd.read_excel("/workspaces/DS_TP/data/jinju_cctv_lamp.xlsx")
-time_df=pd.read_excel("/workspaces/DS_TP/data/crime_time.xlsx")
 
 # 병합
 merged_df = pd.merge(grade_df, lamp_cctv_df, on="행정동", how="inner")
 
-# 그래프
-st.markdown("#### 🔢 위험등급 AND CCTV & 가로등 수")
-
-# 값 준비
-import plotly.graph_objects as go
-
+# 필터링
 target_dongs_graph = ["충무공동", "천전동", "평거동", "하대동", "초장동", "가호동", "상대동", "상봉동"]
 filtered = merged_df[merged_df["행정동"].isin(target_dongs_graph)].copy()
 filtered.sort_values(by="위험등급", ascending=False, inplace=True)
 
-# 시각화 데이터 준비
+# 확인용 출력
+st.write("✅ 필터링된 데이터", filtered)
+
+# 시각화용 데이터
 labels = filtered["행정동"]
 risk = filtered["위험등급"]
 cctv = filtered["CCTV_개수"] / 100
 lamp = filtered["가로등_개수"] / 100
 
-# Plotly 그래프 구성
+# Plotly 그래프 생성
 fig = go.Figure()
+fig.add_trace(go.Scatter(x=labels, y=risk, mode='lines+markers', name='위험등급', line=dict(color='red'), yaxis='y1'))
+fig.add_trace(go.Bar(x=labels, y=cctv, name='CCTV (x100)', marker_color='blue', yaxis='y2', offsetgroup=1))
+fig.add_trace(go.Bar(x=labels, y=lamp, name='가로등 (x100)', marker_color='orange', yaxis='y2', offsetgroup=2))
 
-# 위험등급 (꺾은선)
-fig.add_trace(go.Scatter(
-    x=labels,
-    y=risk,
-    mode='lines+markers',
-    name='위험등급',
-    line=dict(color='red'),
-    yaxis='y1'
-))
-
-# CCTV (막대)
-fig.add_trace(go.Bar(
-    x=labels,
-    y=cctv,
-    name='CCTV (x100)',
-    marker_color='blue',
-    yaxis='y2',
-    offsetgroup=1
-))
-
-# 가로등 (막대)
-fig.add_trace(go.Bar(
-    x=labels,
-    y=lamp,
-    name='가로등 (x100)',
-    marker_color='orange',
-    yaxis='y2',
-    offsetgroup=2
-))
-
-# 레이아웃
+# 레이아웃 설정
 fig.update_layout(
     title='선정된 행정동 위험등급 (선) vs CCTV 및 가로등 수 (막대, x100)',
     xaxis=dict(title='행정동'),
-    yaxis=dict(
-        title='위험등급 (1~10)',
-        range=[0, 10],
-        tick0=0,
-        dtick=2
-    ),
-    yaxis2=dict(
-        title='시설물 수 (x100)',
-        overlaying='y',
-        side='right'
-    ),
+    yaxis=dict(title='위험등급 (1~10)', range=[0, 10], tick0=0, dtick=2),
+    yaxis2=dict(title='시설물 수 (x100)', overlaying='y', side='right'),
     legend=dict(x=1, y=1),
     bargap=0.2,
     width=1000,
     height=500
 )
 
-# 그래프 출력
+# Streamlit 출력
+st.markdown("#### 🔢 위험등급 AND CCTV & 가로등 수")
 st.plotly_chart(fig)
 
 st.markdown("**시간대별 범죄 발생 건수**")
