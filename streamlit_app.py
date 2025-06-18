@@ -7,6 +7,7 @@ from streamlit_folium import st_folium
 from PIL import Image
 import numpy as np
 import os
+from folium.features import CustomIcon
 
 #st.set_page_config(layout="wide")
 
@@ -116,9 +117,7 @@ fig.legend(loc="upper right", bbox_to_anchor=(1, 1), bbox_transform=ax1.transAxe
 st.markdown("### 📊 위험등급 vs CCTV & 가로등")
 st.pyplot(fig)
 
-st.markdown("가로등과 CCTV의 갯수가 적은 곳은 범죄위험등급이 높은 것으로 나옵니다.")
-
-st.markdown("**시간대별 범죄 발생 건수**")
+st.markdown("가로등과 CCTV의 갯수가 적은 곳은 **범죄위험등급이 높은 것**으로 나옵니다.")
 
 #여기에는 시간대별 범죄 발생 건수를 나타내는 그래프
 
@@ -155,47 +154,52 @@ st.markdown("진주시는 새벽에는 가로등을 끄는데 범죄발생은 �
 # ─────────────────────────────
 # 4. 행정구역 + 시설 위치 지도
 # ─────────────────────────────
-st.subheader("4️⃣ 진주시 시설물 지도")
+st.subheader("4️⃣ 🗺️ 진주시 행정구역별 방범시설 지도")
 
-st.markdown("""
-- 아래 지도는 **행정동 경계와 함께 CCTV 및 가로등 위치**를 표시합니다.
-- 원하는 필터를 선택해서 볼 수 있습니다.
-""")
+# 📌 커스텀 마커 아이콘 경로
+cctv_icon_path = "data/red_marker.png"     # 빨간 마커 (CCTV)
+lamp_icon_path = "data/blue_marker.png"    # 파란 마커 (가로등)
 
-# 지도 필터
-show_cctv = st.checkbox("CCTV 위치 보기", value=False)
-show_lamp = st.checkbox("가로등 위치 보기", value=False)
+# ✅ 체크박스 일렬 정렬
+col1, col2 = st.columns(2)
+with col1:
+    show_cctv = st.checkbox("🔴 CCTV 위치 보기", value=False)
+with col2:
+    show_lamp = st.checkbox("🔵 가로등 위치 보기", value=False)
 
-# 지도 데이터 예시 로딩 (위도/경도 포함된 CSV 필요)
-cctv_data = pd.read_excel("/workspaces/DS_TP/data/jinju_cctv.xlsx", engine='openpyxl')
-lamp_data = pd.read_excel("/workspaces/DS_TP/data/jinju_lamp.xlsx", engine='openpyxl')
-
-map_center = [35.1802, 128.1076]  # 진주시 중심 좌표
+# ✅ 지도 생성
+map_center = [35.1802, 128.1076]  # 진주시 중심
 m = folium.Map(location=map_center, zoom_start=13)
 
+# ✅ CCTV 위치 표시
 if show_cctv:
-    for _, row in cctv_data.iterrows():
-        folium.CircleMarker(
-            location=[row['위도'], row['경도']],
-            radius=3,
-            color='blue',
-            fill=True,
-            fill_opacity=0.7,
-            tooltip="CCTV"
-        ).add_to(m)
+    try:
+        cctv_df = pd.read_excel("data/jinju_cctv.xlsx", engine="openpyxl")
+        for _, row in cctv_df.iterrows():
+            folium.Marker(
+                location=[row["위도"], row["경도"]],
+                tooltip="📷 CCTV",
+                icon=CustomIcon(cctv_icon_path, icon_size=(30, 30))
+            ).add_to(m)
+    except Exception as e:
+        st.error(f"❌ CCTV 데이터 오류: {e}")
 
+# ✅ 가로등 위치 표시
 if show_lamp:
-    for _, row in lamp_data.iterrows():
-        folium.CircleMarker(
-            location=[row['위도'], row['경도']],
-            radius=2,
-            color='orange',
-            fill=True,
-            fill_opacity=0.6,
-            tooltip="가로등"
-        ).add_to(m)
+    try:
+        lamp_df = pd.read_excel("data/jinju_lamp.xlsx", engine="openpyxl")
+        for _, row in lamp_df.iterrows():
+            folium.Marker(
+                location=[row["위도"], row["경도"]],
+                tooltip="💡 가로등",
+                icon=CustomIcon(lamp_icon_path, icon_size=(30, 30))
+            ).add_to(m)
+    except Exception as e:
+        st.error(f"❌ 가로등 데이터 오류: {e}")
 
+# ✅ 지도 출력
 st_data = st_folium(m, width=1000, height=600)
+
 
 # ─────────────────────────────
 # 5. 해결방안 제시
