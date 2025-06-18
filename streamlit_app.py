@@ -8,6 +8,7 @@ from PIL import Image
 import numpy as np
 import os
 from folium.features import CustomIcon
+from folium.plugins import MarkerCluster
 
 st.set_page_config(layout="wide")
 
@@ -130,26 +131,29 @@ with tabs[3]:
     with col2:
         show_lamp = st.checkbox("🔵 가로등 위치 보기", value=False)
 
-    map_center = [35.1802, 128.1076]
-    m = folium.Map(location=map_center, zoom_start=13)
+    if "jinju_map" not in st.session_state:
+        st.session_state.jinju_map = folium.Map(location=[35.1802, 128.1076], zoom_start=13, tiles="CartoDB positron")
+    m = st.session_state.jinju_map
 
     if show_cctv:
         cctv_df = load_excel("data/jinju_cctv.xlsx")
+        cluster = MarkerCluster().add_to(m)
         for _, row in cctv_df.iterrows():
             folium.Marker(
                 location=[row["위도"], row["경도"]],
                 tooltip="📷 CCTV",
                 icon=CustomIcon(cctv_icon_path, icon_size=(24, 36))
-            ).add_to(m)
+            ).add_to(cluster)
 
     if show_lamp:
         lamp_df = load_excel("data/jinju_lamp.xlsx")
+        cluster = MarkerCluster().add_to(m)
         for _, row in lamp_df.iterrows():
             folium.Marker(
                 location=[row["위도"], row["경도"]],
                 tooltip="💡 가로등",
                 icon=CustomIcon(lamp_icon_path, icon_size=(24, 36))
-            ).add_to(m)
+            ).add_to(cluster)
 
     st_folium(m, width=800, height=500)
 
