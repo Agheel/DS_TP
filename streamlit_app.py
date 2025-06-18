@@ -31,6 +31,8 @@ def get_font():
 
 fontprop = get_font()
 
+st.header("📍 진주시 범죄")
+
 # ─────────────────────────────
 # 📍 탭 구분
 # ─────────────────────────────
@@ -40,14 +42,12 @@ tabs = st.tabs(["1️⃣ 주제 선정", "2️⃣ 이론적 배경", "3️⃣ �
 # 1️⃣ 주제 선정 탭
 # ─────────────────────────────
 with tabs[0]:
-    st.markdown("<h1 style='text-align: center;'>📍 진주시 범죄</h1>", unsafe_allow_html=True)
     st.markdown("<h3 style='text-align: center;'>1️⃣ 주제 선정 배경</h3>", unsafe_allow_html=True)
-
-    col1, col2 = st.columns([1,1])
+    col1, col2 = st.columns([1, 1])
     with col1:
-        st.image(load_image("data/crime_region.png", (400, 350)), caption="경상남도의 지역별 범죄지수")
+        st.image(load_image("data/crime_region.png", size=(300, 250)), caption="경상남도의 지역별 범죄지수")
     with col2:
-        st.image(load_image("data/crime_year.png", (500, 430)), caption="연도별 진주시 범죄 지수")
+        st.image(load_image("data/crime_year.png", size=(300, 250)), caption="연도별 진주시 범죄 지수")
 
     st.markdown("""
     <div style='text-align: center;'>
@@ -88,8 +88,7 @@ with tabs[2]:
 
     x = np.arange(len(df))
     width = 0.25
-    fig, ax1 = plt.subplots(figsize=(14, 6))
-
+    fig1, ax1 = plt.subplots(figsize=(5.5, 3))
     ax1.plot(x, df["위험등급"], color='red', marker='o')
     ax1.set_ylabel("위험등급 (1~10)", color='red', fontproperties=fontprop)
     ax1.set_xticks(x)
@@ -103,21 +102,20 @@ with tabs[2]:
     ax2.set_ylabel("시설 수 (x100)", color='blue', fontproperties=fontprop)
     ax2.tick_params(axis='y', labelcolor='blue')
 
-    plt.title("행정동별 위험도 vs CCTV, 가로등", fontproperties=fontprop)
-    st.pyplot(fig)
-    st.markdown("<div style='text-align: center;'>가로등과 CCTV의 갯수가 적은 곳은 <b>범죄위험등급이 높은 것</b>으로 나옵니다.</div>", unsafe_allow_html=True)
-
     crime_by_time = time_df.drop(columns=["범죄대분류"]).sum().sort_values(ascending=False)
-    fig2, ax = plt.subplots(figsize=(12, 6))
+    fig2, ax = plt.subplots(figsize=(5.5, 3))
     ax.bar(crime_by_time.index, crime_by_time.values, color='skyblue')
     ax.set_title("시간대별 범죄 발생 건수", fontproperties=fontprop)
     ax.set_xlabel("시각대", fontproperties=fontprop)
     ax.set_ylabel("건수", fontproperties=fontprop)
     ax.set_xticks(np.arange(len(crime_by_time)))
     ax.set_xticklabels(crime_by_time.index, rotation=45, fontproperties=fontprop)
-    st.markdown("<h4 style='text-align: center;'>⏰ 시간대별 범죄 발생 빈도</h4>", unsafe_allow_html=True)
-    st.pyplot(fig2)
-    st.markdown("<div style='text-align: center;'>진주시는 새벽에는 가로등을 끄는데 범죄발생은 주로 새벽 시간대에 발생합니다.</div>", unsafe_allow_html=True)
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.pyplot(fig1)
+    with col2:
+        st.pyplot(fig2)
 
 # ─────────────────────────────
 # 4️⃣ 지도 시각화
@@ -144,7 +142,7 @@ with tabs[3]:
         for _, row in cctv_df.iterrows():
             folium.Marker(
                 location=[row["위도"], row["경도"]],
-                tooltip="📷 CCTV",
+                tooltip="\ud83d\udcf7 CCTV",
                 icon=CustomIcon(cctv_icon_path, icon_size=(24, 36))
             ).add_to(cluster)
 
@@ -154,7 +152,7 @@ with tabs[3]:
         for _, row in lamp_df.iterrows():
             folium.Marker(
                 location=[row["위도"], row["경도"]],
-                tooltip="💡 가로등",
+                tooltip="\ud83d\udca1 \uac00\ub85c\ub4f1",
                 icon=CustomIcon(lamp_icon_path, icon_size=(24, 36))
             ).add_to(cluster)
 
@@ -167,8 +165,8 @@ with tabs[4]:
     st.markdown("<h3 style='text-align: center;'>5️⃣ 해결 방안 제시</h3>", unsafe_allow_html=True)
     st.markdown("""
     <div style='text-align: center;'>
-    - 📌 <b>부족한 지역에 CCTV 추가 설치</b><br>
-    - 💡 <b>가로등 설치 및 노후화된 시설 개선</b><br>
+    - \ud83d\udccc <b>부족한 지역에 CCTV 추가 설치</b><br>
+    - \ud83d\udca1 <b>가로등 설치 및 노후화된 시설 개선</b><br>
     - ⏰ <b>가로등 운영시간 연장 (심야 시간 포함)</b><br>
     - ☎️ <b>안심귀가 콜 서비스 활성화</b>
     </div>
