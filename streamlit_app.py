@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.font_manager as fm
 import folium
 from streamlit_folium import st_folium
 from PIL import Image
@@ -60,6 +61,9 @@ st.markdown("""
 st.markdown("진주시 행정동별 위험도 및 방범 시설 비교")
 
 st.markdown("#### 🔢 위험등급 AND CCTV & 가로등 수")
+
+plt.rcParams['font.family'] = 'Malgun Gothic'   # 윈도우 기본 한글 폰트
+plt.rcParams['axes.unicode_minus'] = False      # 음수 깨짐 방지
 
 # 데이터 로딩
 time_df=pd.read_excel("/workspaces/DS_TP/data/crime_time.xlsx")
