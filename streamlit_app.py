@@ -79,7 +79,7 @@ lamp_cctv_df = pd.read_excel("data/jinju_cctv_lamp.xlsx", engine="openpyxl")
 merged_df = pd.merge(grade_df, lamp_cctv_df, on="행정동", how="inner")
 
 # 🎯 대상 행정동 필터링 및 정렬
-target_dongs_graph = ["충무공동", "천전동", "평거동", "하대동", "초장동", "가호동", "상대동", "판문동"]
+target_dongs_graph = ["충무공동", "천전동", "평거동", "하대동", "초장동", "가호동", "상대동"]
 filtered = merged_df[merged_df["행정동"].isin(target_dongs_graph)].copy()
 filtered.sort_values(by="위험등급", ascending=False, inplace=True)
 
