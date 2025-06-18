@@ -62,8 +62,10 @@ st.markdown("진주시 행정동별 위험도 및 방범 시설 비교")
 
 st.markdown("#### 🔢 위험등급 AND CCTV & 가로등 수")
 
-plt.rcParams['font.family'] = 'Malgun Gothic'   # 윈도우 기본 한글 폰트
-plt.rcParams['axes.unicode_minus'] = False      # 음수 깨짐 방지
+font_path = "C:/Windows/Fonts/malgun.ttf"  # ← 실제 위치 확인 후 수정
+fontprop = fm.FontProperties(fname=font_path)
+plt.rcParams['font.family'] = fontprop.get_name()
+plt.rcParams['axes.unicode_minus'] = False
 
 # 데이터 로딩
 time_df=pd.read_excel("/workspaces/DS_TP/data/crime_time.xlsx")
