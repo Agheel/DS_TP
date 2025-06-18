@@ -63,13 +63,10 @@ st.markdown("진주시 행정동별 위험도 및 방범 시설 비교")
 
 st.markdown("#### 🔢 위험등급 AND CCTV & 가로등 수")
 
-font_path = "C:/Windows/Fonts/malgun.ttf"  # 또는 malgunbd.ttf
-if os.path.exists(font_path):
-    fontprop = fm.FontProperties(fname=font_path)
-    plt.rcParams['font.family'] = fontprop.get_name()
-    plt.rcParams['axes.unicode_minus'] = False
-else:
-    print("❌ Malgun Gothic 폰트 파일을 찾을 수 없습니다.")
+font_path = "./fonts/NanumGothic.ttf"  # 상대경로
+fontprop = fm.FontProperties(fname=font_path)
+plt.rcParams['font.family'] = fontprop.get_name()
+plt.rcParams['axes.unicode_minus'] = False
 
 # 데이터 로딩
 time_df=pd.read_excel("/workspaces/DS_TP/data/crime_time.xlsx")
