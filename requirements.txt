@@ -4,6 +4,5 @@ streamlit_folium
 folium
 matplotlib
 openpyxl
-Image
+Pillow
 numpy
-CustomIcon
