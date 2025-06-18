@@ -127,9 +127,9 @@ with tabs[3]:
 
     col1, col2 = st.columns(2)
     with col1:
-        show_cctv = st.checkbox("🔴 CCTV 위치 보기", value=True)
+        show_cctv = st.checkbox("🔴 CCTV 위치 보기", value=False)
     with col2:
-        show_lamp = st.checkbox("🔵 가로등 위치 보기", value=True)
+        show_lamp = st.checkbox("🔵 가로등 위치 보기", value=False)
 
     if "jinju_map" not in st.session_state:
         st.session_state.jinju_map = folium.Map(location=[35.1802, 128.1076], zoom_start=13, tiles="CartoDB positron")
