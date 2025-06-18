@@ -63,38 +63,39 @@ st.markdown("#### 🔢 위험등급 AND CCTV & 가로등 수")
 
 # 데이터 로딩
 time_df=pd.read_excel("/workspaces/DS_TP/data/crime_time.xlsx")
-grade_df = pd.read_excel("/workspaces/DS_TP/data/jinju_crime_grade.xlsx")
-lamp_cctv_df = pd.read_excel("/workspaces/DS_TP/data/jinju_cctv_lamp.xlsx")
+import matplotlib.pyplot as plt
 
-# 병합
+# 📂 엑셀 데이터 불러오기
+grade_df = pd.read_excel("jinju_crime_grade.xlsx", engine="openpyxl")
+lamp_cctv_df = pd.read_excel("jinju_cctv_lamp.xlsx", engine="openpyxl")
+
+# 🔗 데이터 병합
 merged_df = pd.merge(grade_df, lamp_cctv_df, on="행정동", how="inner")
 
-# 필터링
+# 🎯 대상 행정동 필터링 및 정렬
 target_dongs_graph = ["충무공동", "천전동", "평거동", "하대동", "초장동", "가호동", "상대동", "상봉동"]
 filtered = merged_df[merged_df["행정동"].isin(target_dongs_graph)].copy()
-
-# 위험등급 기준 내림차순 정렬
 filtered.sort_values(by="위험등급", ascending=False, inplace=True)
 
+# 📊 시각화 데이터
 labels = filtered["행정동"]
 x = np.arange(len(labels))
 width = 0.25
-
 risk = filtered["위험등급"]
 cctv = filtered["CCTV_개수"] / 100
 lamp = filtered["가로등_개수"] / 100
 
-# 그래프 그리기
+# 🎨 그래프 생성
 fig, ax1 = plt.subplots(figsize=(14, 6))
 
-# 왼쪽 Y축: 위험등급
+# 좌측 Y축: 위험등급 (꺾은선)
 ax1.set_ylabel("위험등급 (1~10)", color='red')
 ax1.plot(x, risk, color='red', marker='o', label='위험등급')
 ax1.tick_params(axis='y', labelcolor='red')
 ax1.set_ylim(0, 10)
 ax1.set_yticks(np.arange(0, 11, 2))
 
-# 오른쪽 Y축: CCTV, 가로등
+# 우측 Y축: CCTV & 가로등 (막대)
 ax2 = ax1.twinx()
 ax2.set_ylabel("시설물 수 (x100)", color='blue')
 bars_cctv = ax2.bar(x - width/2, cctv, width, label='CCTV (x100)', color='blue')
@@ -102,7 +103,7 @@ bars_lamp = ax2.bar(x + width/2, lamp, width, label='가로등 (x100)', color='o
 ax2.tick_params(axis='y', labelcolor='blue')
 ax2.set_ylim(0, max(max(cctv), max(lamp)) * 1.2)
 
-# X축 라벨 설정
+# X축 설정
 ax1.set_xticks(x)
 ax1.set_xticklabels(labels, rotation=45)
 
@@ -110,8 +111,8 @@ ax1.set_xticklabels(labels, rotation=45)
 plt.title("선정된 행정동 위험등급 (선) vs CCTV 및 가로등 수 (막대, x100)")
 fig.legend(loc="upper right", bbox_to_anchor=(1, 1), bbox_transform=ax1.transAxes)
 
-plt.tight_layout()
-plt.show()
+st.markdown("### 📊 위험등급 vs CCTV & 가로등")
+st.pyplot(fig)
 
 st.markdown("**시간대별 범죄 발생 건수**")
 
