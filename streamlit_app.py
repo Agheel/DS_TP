@@ -20,8 +20,8 @@ st.markdown("""
 """)
 
 # 이미지 불러오기 및 리사이즈
-img1 = Image.open("/workspaces/DS_TP/data/crime_region.png").resize((400, 350))
-img2 = Image.open("/workspaces/DS_TP/data/crime_year.png").resize((500, 430))
+img1 = Image.open("data/crime_region.png").resize((400, 350))
+img2 = Image.open("data/crime_year.png").resize((500, 430))
 
 # 열 2개 생성
 col1, col2 = st.columns(2)
@@ -63,7 +63,6 @@ st.markdown("#### 🔢 위험등급 AND CCTV & 가로등 수")
 
 # 데이터 로딩
 time_df=pd.read_excel("/workspaces/DS_TP/data/crime_time.xlsx")
-import matplotlib.pyplot as plt
 
 # 📂 엑셀 데이터 불러오기
 grade_df = pd.read_excel("jinju_crime_grade.xlsx", engine="openpyxl")
@@ -73,7 +72,7 @@ lamp_cctv_df = pd.read_excel("jinju_cctv_lamp.xlsx", engine="openpyxl")
 merged_df = pd.merge(grade_df, lamp_cctv_df, on="행정동", how="inner")
 
 # 🎯 대상 행정동 필터링 및 정렬
-target_dongs_graph = ["충무공동", "천전동", "평거동", "하대동", "초장동", "가호동", "상대동", "상봉동"]
+target_dongs_graph = ["충무공동", "천전동", "평거동", "하대동", "초장동", "가호동", "상대동", "판문동"]
 filtered = merged_df[merged_df["행정동"].isin(target_dongs_graph)].copy()
 filtered.sort_values(by="위험등급", ascending=False, inplace=True)
 
