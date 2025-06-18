@@ -65,7 +65,7 @@ st.markdown("#### 🔢 위험등급 AND CCTV & 가로등 수")
 time_df=pd.read_excel("/workspaces/DS_TP/data/crime_time.xlsx")
 
 # 📂 엑셀 데이터 불러오기
-grade_df = pd.read_excel("data/jinju_crime_grade.xlsx.xlsx", engine="openpyxl")
+grade_df = pd.read_excel("data/jinju_crime_grade.xlsx", engine="openpyxl")
 lamp_cctv_df = pd.read_excel("data/jinju_cctv_lamp.xlsx", engine="openpyxl")
 
 # 🔗 데이터 병합
