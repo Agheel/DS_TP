@@ -123,9 +123,6 @@ with tabs[2]:
 with tabs[3]:
     st.markdown("<h3 style='text-align: center;'>4️⃣ 진주시 행정구역별 방범시설 지도</h3>", unsafe_allow_html=True)
 
-    cctv_icon_path = "data/red_marker.png"
-    lamp_icon_path = "data/blue_marker.png"
-
     col1, col2 = st.columns(2)
     with col1:
         show_cctv = st.checkbox("🔴 CCTV 위치 보기", value=False)
@@ -142,8 +139,8 @@ with tabs[3]:
         for _, row in cctv_df.iterrows():
             folium.Marker(
                 location=[row["위도"], row["경도"]],
-                tooltip="\ud83d\udcf7 CCTV",
-                icon=CustomIcon(cctv_icon_path, icon_size=(24, 36))
+                tooltip="📷 CCTV",
+                icon=folium.Icon(color="red", icon="camera", prefix="fa")
             ).add_to(cluster)
 
     if show_lamp:
@@ -152,12 +149,12 @@ with tabs[3]:
         for _, row in lamp_df.iterrows():
             folium.Marker(
                 location=[row["위도"], row["경도"]],
-                tooltip="\ud83d\udca1 \uac00\ub85c\ub4f1",
-                icon=CustomIcon(lamp_icon_path, icon_size=(24, 36))
+                tooltip="💡 가로등",
+                icon=folium.Icon(color="blue", icon="lightbulb-o", prefix="fa")
             ).add_to(cluster)
 
     st_folium(m, width=800, height=500)
-
+    
 # ─────────────────────────────
 # 5️⃣ 해결방안
 # ─────────────────────────────
