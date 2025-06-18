@@ -198,7 +198,7 @@ if show_lamp:
         st.error(f"❌ 가로등 데이터 오류: {e}")
 
 # ✅ 지도 출력
-st_data = st_folium(m, width=1000, height=600)
+st_data = st_folium(m, width=800, height=480)
 
 
 # ─────────────────────────────
