@@ -61,11 +61,14 @@ st.markdown("""
 # ─────────────────────────────
 st.markdown("진주시 행정동별 위험도 및 방범 시설 비교")
 
-font_path = "fonts/NanumGothic.ttf"  # 상대경로
-fontprop = fm.FontProperties(fname=font_path)
-plt.rcParams['font.family'] = fontprop.get_name()
-plt.rcParams['axes.unicode_minus'] = False
-
+font_path = "fonts/NanumGothic.ttf"
+if os.path.exists(font_path):
+    fontprop = fm.FontProperties(fname=font_path)
+    plt.rcParams['font.family'] = fontprop.get_name()
+    plt.rcParams['axes.unicode_minus'] = False
+else:
+    st.warning("❌ NanumGothic.ttf 파일이 fonts 폴더에 없습니다.")
+    
 # 데이터 로딩
 time_df=pd.read_excel("/workspaces/DS_TP/data/crime_time.xlsx")
 
