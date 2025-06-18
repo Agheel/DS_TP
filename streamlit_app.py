@@ -130,23 +130,23 @@ else:
     st.warning("❌ NanumGothic.ttf 파일이 fonts 폴더에 없습니다.")
     fontprop = None
 
-# ✅ 시간대별 총합 구하기
 crime_by_time = time_df.drop(columns=["범죄대분류"]).sum().sort_values(ascending=False)
 
-# ✅ 그래프 생성
 fig, ax = plt.subplots(figsize=(12, 6))
 ax.bar(crime_by_time.index, crime_by_time.values, color='skyblue')
 
-# ✅ 라벨 및 제목 폰트 설정
-ax.set_title("시간대별 범죄 발생 건수", fontproperties=fontprop)
-ax.set_xlabel("범죄 발생 시각대", fontproperties=fontprop)
-ax.set_ylabel("건수", fontproperties=fontprop)
-ax.set_xticks(np.arange(len(crime_by_time.index)))
-ax.set_xticklabels(crime_by_time.index, rotation=45, fontproperties=fontprop)
+if fontprop:
+    ax.set_title("시간대별 범죄 발생 건수", fontproperties=fontprop)
+    ax.set_xlabel("범죄 발생 시각대", fontproperties=fontprop)
+    ax.set_ylabel("건수", fontproperties=fontprop)
+    ax.set_xticklabels(crime_by_time.index, rotation=45, fontproperties=fontprop)
+else:
+    ax.set_title("시간대별 범죄 발생 건수")
+    ax.set_xlabel("범죄 발생 시각대")
+    ax.set_ylabel("건수")
+    ax.set_xticklabels(crime_by_time.index, rotation=45)
 
 plt.tight_layout()
-
-# ✅ Streamlit 출력
 st.markdown("### ⏰ 시간대별 범죄 발생 빈도")
 st.pyplot(fig)
 
