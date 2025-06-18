@@ -116,11 +116,41 @@ fig.legend(loc="upper right", bbox_to_anchor=(1, 1), bbox_transform=ax1.transAxe
 st.markdown("### 📊 위험등급 vs CCTV & 가로등")
 st.pyplot(fig)
 
+st.markdown("가로등과 CCTV의 갯수가 적은 곳은 범죄위험등급이 높은 것으로 나옵니다.")
+
 st.markdown("**시간대별 범죄 발생 건수**")
 
 #여기에는 시간대별 범죄 발생 건수를 나타내는 그래프
 
-st.markdown("진주시는 범죄율이 높은데 비해 가로등과 CCTV가 적은 곳이 존재함")
+# 시간대별 총합
+font_path = "fonts/NanumGothic.ttf"
+if os.path.exists(font_path):
+    fontprop = fm.FontProperties(fname=font_path)
+else:
+    st.warning("❌ NanumGothic.ttf 파일이 fonts 폴더에 없습니다.")
+    fontprop = None
+
+# ✅ 시간대별 총합 구하기
+crime_by_time = time_df.drop(columns=["범죄대분류"]).sum().sort_values(ascending=False)
+
+# ✅ 그래프 생성
+fig, ax = plt.subplots(figsize=(12, 6))
+ax.bar(crime_by_time.index, crime_by_time.values, color='skyblue')
+
+# ✅ 라벨 및 제목 폰트 설정
+ax.set_title("시간대별 범죄 발생 건수", fontproperties=fontprop)
+ax.set_xlabel("범죄 발생 시각대", fontproperties=fontprop)
+ax.set_ylabel("건수", fontproperties=fontprop)
+ax.set_xticks(np.arange(len(crime_by_time.index)))
+ax.set_xticklabels(crime_by_time.index, rotation=45, fontproperties=fontprop)
+
+plt.tight_layout()
+
+# ✅ Streamlit 출력
+st.markdown("### ⏰ 시간대별 범죄 발생 빈도")
+st.pyplot(fig)
+
+st.markdown("진주시는 새벽에는 가로등을 끄는데 범죄발생은 주로 새벽 시간대에 발생합니다.")
 
 # ─────────────────────────────
 # 4. 행정구역 + 시설 위치 지도
