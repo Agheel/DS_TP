@@ -74,21 +74,19 @@ st.markdown("#### 🔢 위험등급 AND CCTV & 가로등 수")
 import plotly.graph_objects as go
 
 target_dongs_graph = ["충무공동", "천전동", "평거동", "하대동", "초장동", "가호동", "상대동", "상봉동"]
-
-# 필터링 및 정렬
 filtered = merged_df[merged_df["행정동"].isin(target_dongs_graph)].copy()
 filtered.sort_values(by="위험등급", ascending=False, inplace=True)
 
-# 시각화용 데이터 추출
+# 시각화 데이터 준비
 labels = filtered["행정동"]
 risk = filtered["위험등급"]
 cctv = filtered["CCTV_개수"] / 100
 lamp = filtered["가로등_개수"] / 100
 
-# Plotly 그래프 생성
+# Plotly 그래프 구성
 fig = go.Figure()
 
-# 위험등급 (선)
+# 위험등급 (꺾은선)
 fig.add_trace(go.Scatter(
     x=labels,
     y=risk,
@@ -139,7 +137,8 @@ fig.update_layout(
     height=500
 )
 
-fig.show()
+# 그래프 출력
+st.plotly_chart(fig)
 
 st.markdown("**시간대별 범죄 발생 건수**")
 
