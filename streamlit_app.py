@@ -8,7 +8,8 @@ from PIL import Image
 import numpy as np
 import os
 from folium.plugins import MarkerCluster
-
+#반드시 홈 밑에 data 폴더랑 fonts 파일이 있어야하고 fonts파일 안에 나눔고딕 파일이 있어야 제 페이지가 제대로 작동합니다.
+#data 파일 안에 있는 거 그대로 복붙하셔도 될겁니다.
 st.set_page_config(layout="wide")
 
 @st.cache_data
